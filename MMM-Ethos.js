@@ -14,7 +14,8 @@ Module.register("MMM-Ethos", {
 	defaults: {
 		ethosApiLink: "",
 		updateInterval: 60000,
-		retryDelay: 5000
+		retryDelay: 5000,
+		allTemps: false
 	},
 
 	requiresVersion: "2.1.0", // Required version of MagicMirror
@@ -111,7 +112,6 @@ Module.register("MMM-Ethos", {
 			// translations  + datanotification
 			wrapperDataNotification.innerHTML =  this.translate("UPDATE") + ": " + this.dataNotification.date;
 
-			tableWrapper.appendChild(wrapperDataNotification);
 		}
 		return tableWrapper;
 	},
@@ -138,9 +138,15 @@ Module.register("MMM-Ethos", {
 
         var tableHeadValues = [
 			"Gpus",
-            "Hashes",
-            "Temps °C"
-        ];
+            "Hashes"
+		];
+		
+		if (self.config.allTemps) {
+			tableHeadValues.push("Temps °C");
+		}else {
+			tableHeadValues.push("Temp");
+		}
+
         for (var thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
             var tableHeadSetup = document.createElement("th");
             tableHeadSetup.innerHTML = tableHeadValues[thCounter];
@@ -159,9 +165,15 @@ Module.register("MMM-Ethos", {
                 trWrapper.className = 'tr';
                 var tdValues = [
 					rigs[index]['gpus'],
-                    rigs[index]['hash'],
-                    rigs[index]['temp']
-                ];
+                    rigs[index]['hash']
+				];
+				if (self.config.allTemps) {
+					tdValues.push(rigs[index]['temp']);
+				}
+				else {
+					self.getAverageTemp(rigs[index]['temp']);
+					tdValues.push(self.getAverageTemp(rigs[index]['temp'])+"°C");
+				}
                 for (var c = 0; c < tdValues.length; c++) {
                     var tdWrapper = document.createElement("td");
     
@@ -175,7 +187,16 @@ Module.register("MMM-Ethos", {
             }
         }
         return trWrapper;
-    },
+	},
+	
+	getAverageTemp: function(temp) {
+		let temps = temp.split(" ");
+		let averageTemp = 0.0;
+		for (let i = 0; i < temps.length; i++) {
+			averageTemp += parseFloat(temps[i]);
+		}
+		return (averageTemp/temps.length).toFixed(2);
+	},
 
 	getScripts: function() {
 		return [];
