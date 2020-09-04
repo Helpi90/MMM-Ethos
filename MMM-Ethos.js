@@ -51,9 +51,9 @@ Module.register("MMM-Ethos", {
         var dataRequest = new XMLHttpRequest();
         dataRequest.open("GET", urlApi, true);
         dataRequest.onreadystatechange = function () {
-            console.log(this.readyState);
+            //console.log(this.readyState);
             if (this.readyState === 4) {
-                console.log(this.status);
+                //console.log(this.status);
                 if (this.status === 200) {
                     self.processData(JSON.parse(this.response));
                 } else if (this.status === 401) {
@@ -121,7 +121,6 @@ Module.register("MMM-Ethos", {
 		let rigsIds = this.getRigIds();
 		for(let i=0; i<rigsIds.length; i++){
 			let rigData = this.dataRequest['rigs'][rigsIds[i]]
-			console.log(rigData);
 			rigsData.push(rigData);
 		}
 		return rigsData;
@@ -138,7 +137,6 @@ Module.register("MMM-Ethos", {
         tableHeadRow.className = 'border-bottom';
 
         var tableHeadValues = [
-			"Rig",
 			"Gpus",
             "Hashes",
             "Temps °C"
@@ -160,7 +158,6 @@ Module.register("MMM-Ethos", {
                 var trWrapper = document.createElement("tr");
                 trWrapper.className = 'tr';
                 var tdValues = [
-					index+1,
 					rigs[index]['gpus'],
                     rigs[index]['hash'],
                     rigs[index]['temp']
