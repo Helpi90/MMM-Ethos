@@ -142,7 +142,7 @@ Module.register("MMM-Ethos", {
 		];
 		
 		if (self.config.allTemps) {
-			tableHeadValues.push("Temps °C");
+			tableHeadValues.push(this.translate("TEMP")+" °C");
 		}else {
 			tableHeadValues.push("Temp");
 		}
