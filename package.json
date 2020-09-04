@@ -1,0 +1,25 @@
+{
+  "name": "Magic-Mirror-Module-Ethos",
+  "version": "1.0.0",
+  "description": "Displays the rig details from ethosdistro.com",
+  "main": "MMM-Ethos.js",
+  "author": "Marc Helpenstein <helpi9007@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "latest",
+    "grunt-eslint": "latest",
+    "grunt-jsonlint": "latest",
+    "grunt-markdownlint": "^1.0.13",
+    "grunt-stylelint": "latest",
+    "grunt-yamllint": "latest",
+    "stylelint-config-standard": "latest",
+    "time-grunt": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Defjam121/MMM-Ethos.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Defjam121/MMM-Ethos/issues"
+  }
+}
