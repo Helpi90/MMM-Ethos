@@ -7,6 +7,9 @@
  * MIT Licensed.
  */
 
+
+
+
 Module.register("MMM-Ethos", {
 	defaults: {
 		ethosApiLink: "",
@@ -20,6 +23,8 @@ Module.register("MMM-Ethos", {
 		var self = this;
 		var dataRequest = null;
 		var dataNotification = null;
+
+		moment.locale(config.language);
 
 		//Flag for check if module is loaded
 		this.loaded = false;
@@ -37,35 +42,34 @@ Module.register("MMM-Ethos", {
 	 * get a URL request
 	 *
 	 */
-	getData: function() {
-		var self = this;
+	getData: function () {
+        var self = this;
 
-		var urlApi = "https://jsonplaceholder.typicode.com/posts/1";
-		var retry = true;
+        var urlApi = self.config.ethosApiLink;
+        var retry = true;
 
-		var dataRequest = new XMLHttpRequest();
-		dataRequest.open("GET", urlApi, true);
-		dataRequest.onreadystatechange = function() {
-			console.log(this.readyState);
-			if (this.readyState === 4) {
-				console.log(this.status);
-				if (this.status === 200) {
-					self.processData(JSON.parse(this.response));
-				} else if (this.status === 401) {
-					self.updateDom(self.config.animationSpeed);
-					Log.error(self.name, this.status);
-					retry = false;
-				} else {
-					Log.error(self.name, "Could not load data.");
-				}
-				if (retry) {
-					self.scheduleUpdate((self.loaded) ? -1 : self.config.retryDelay);
-				}
-			}
+        var dataRequest = new XMLHttpRequest();
+        dataRequest.open("GET", urlApi, true);
+        dataRequest.onreadystatechange = function () {
+            console.log(this.readyState);
+            if (this.readyState === 4) {
+                console.log(this.status);
+                if (this.status === 200) {
+                    self.processData(JSON.parse(this.response));
+                } else if (this.status === 401) {
+                    self.updateDom(self.config.animationSpeed);
+                    Log.error(self.name, this.status);
+                    retry = false;
+                } else {
+                    Log.error(self.name, "Could not load data.");
+                }
+                if (retry) {
+                    self.scheduleUpdate((self.loaded) ? -1 : self.config.retryDelay);
+                }
+            }
 		};
 		dataRequest.send();
-	},
-
+    },
 
 	/* scheduleUpdate()
 	 * Schedule next update.
@@ -85,26 +89,21 @@ Module.register("MMM-Ethos", {
 		}, nextLoad);
 	},
 
+	
+
 	getDom: function() {
 		var self = this;
-
-		// create element wrapper for show into the module
-		var wrapper = document.createElement("div");
+       	var tableWrapper = document.createElement("table");
+       	tableWrapper.className = "small mmm-ethos-table";
 		// If this.dataRequest is not empty
-		if (this.dataRequest) {
-			var wrapperDataRequest = document.createElement("div");
-			// check format https://jsonplaceholder.typicode.com/posts/1
-			wrapperDataRequest.innerHTML = this.dataRequest.title;
-
-			var labelDataRequest = document.createElement("label");
-			// Use translate function
-			//             this id defined in translations files
-			labelDataRequest.innerHTML = this.translate("TITLE");
-
-
-			wrapper.appendChild(labelDataRequest);
-			wrapper.appendChild(wrapperDataRequest);
-		}
+		if(self.dataRequest){
+            var tableHeadRow = self.createTableHead();
+            tableWrapper.appendChild(tableHeadRow);
+            var rigs = self.getRigData();
+            var trWrapper = self.createTableData(rigs,tableWrapper);
+            tableWrapper.appendChild(trWrapper);
+       	}
+        
 
 		// Data from helper
 		if (this.dataNotification) {
@@ -112,10 +111,74 @@ Module.register("MMM-Ethos", {
 			// translations  + datanotification
 			wrapperDataNotification.innerHTML =  this.translate("UPDATE") + ": " + this.dataNotification.date;
 
-			wrapper.appendChild(wrapperDataNotification);
+			tableWrapper.appendChild(wrapperDataNotification);
 		}
-		return wrapper;
+		return tableWrapper;
 	},
+
+	getRigData: function() {
+		let rigsData = [];
+		let rigsIds = this.getRigIds();
+		for(let i=0; i<rigsIds.length; i++){
+			let rigData = this.dataRequest['rigs'][rigsIds[i]]
+			console.log(rigData);
+			rigsData.push(rigData);
+		}
+		return rigsData;
+	},
+
+	getRigIds: function () {
+		let rigs = Object.keys(this.dataRequest['rigs']);
+		return rigs;
+	},
+
+	createTableHead: function () {
+        var self = this;
+        var tableHeadRow = document.createElement("tr");
+        tableHeadRow.className = 'border-bottom';
+
+        var tableHeadValues = [
+			"Rig",
+			"Gpus",
+            "Hashes",
+            "Temps °C"
+        ];
+        for (var thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
+            var tableHeadSetup = document.createElement("th");
+            tableHeadSetup.innerHTML = tableHeadValues[thCounter];
+
+            tableHeadRow.appendChild(tableHeadSetup);
+        }
+        return tableHeadRow;
+
+	},
+	
+    createTableData: function (rigs,tableWrapper) {
+        var self = this;
+        if (rigs.length > 0) {
+            for (let index = 0; index < rigs.length; index++) {
+                var trWrapper = document.createElement("tr");
+                trWrapper.className = 'tr';
+                var tdValues = [
+					index+1,
+					rigs[index]['gpus'],
+                    rigs[index]['hash'],
+                    rigs[index]['temp']
+                ];
+                for (var c = 0; c < tdValues.length; c++) {
+                    var tdWrapper = document.createElement("td");
+    
+                    tdWrapper.innerHTML = tdValues[c];
+    
+                    trWrapper.appendChild(tdWrapper);
+                }
+    
+                tableWrapper.appendChild(trWrapper);
+                
+            }
+        }
+        return trWrapper;
+    },
 
 	getScripts: function() {
 		return [];
@@ -123,7 +186,8 @@ Module.register("MMM-Ethos", {
 
 	getStyles: function () {
 		return [
-			"{{MODULE_NAME}}.css",
+			"MMM-Ethos.css",
+			"font-awesome.css"
 		];
 	},
 
@@ -132,7 +196,8 @@ Module.register("MMM-Ethos", {
 		//FIXME: This can be load a one file javascript definition
 		return {
 			en: "translations/en.json",
-			es: "translations/es.json"
+			es: "translations/es.json",
+			de: "translations/de.json"
 		};
 	},
 
@@ -144,14 +209,14 @@ Module.register("MMM-Ethos", {
 
 		// the data if load
 		// send notification to helper
-		this.sendSocketNotification("{{MODULE_NAME}}-NOTIFICATION_TEST", data);
+		this.sendSocketNotification("MMM-Ethos-NOTIFICATION_TEST", data);
 	},
 
 	// socketNotificationReceived from helper
 	socketNotificationReceived: function (notification, payload) {
-		if(notification === "{{MODULE_NAME}}-NOTIFICATION_TEST") {
+		if(notification === "MMM-Ethos-NOTIFICATION_TEST") {
 			// set dataNotification
-			this.dataNotification = payload;
+			this.rigs = payload;
 			this.updateDom();
 		}
 	},

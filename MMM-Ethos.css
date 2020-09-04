@@ -8,3 +8,23 @@
  * Custom here your css module
  *
  */
+
+ .mmm-ethos-table * {
+    padding-left: 20px;
+    padding-top: 5px;
+}
+.mmm-ethos-table tr.border-bottom th {
+    border-bottom: 1px solid #666;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.mmm-ethos-table *:first-child {
+    padding-left: 0;
+}
+.mmm-ethos-table .delay {
+    color: red;
+}
+
+.MMM-ethos img{
+    filter: grayscale(100%);
+}
