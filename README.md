@@ -2,10 +2,14 @@
 
 This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/).
 
-This module shows stats from ethosdistro.com api.
-
+This module shows stats from ethosdistro.com api.<br/> <br/> 
+### Show summary and rigs
+![displayType detail](summaryAndEveryRig.png) &nbsp;&nbsp; 
+<br/> <br/> 
+### Show rigs and all temps
+![displayType digital](showAllTemps.png)
 ## Installing the module
-Clone this repository in your `~/MagicMirror/modules/` folder `( $ cd ~MagicMirror/modules/ )`:
+Clone this repository in your `~/MagicMirror/modules/`:
 ````javascript
 git clone https://github.com/Defjam121/MMM-Ethos.git
 ````

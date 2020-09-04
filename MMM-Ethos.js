@@ -21,6 +21,10 @@ Module.register("MMM-Ethos", {
 
 	requiresVersion: "2.1.0", // Required version of MagicMirror
 
+	/**
+	 * @function start
+	 * @description Calls createInterval and sends the config to the node_helper.
+	 */
 	start: function() {
 		var self = this;
 		var dataRequest = null;
@@ -38,11 +42,9 @@ Module.register("MMM-Ethos", {
 		}, this.config.updateInterval);
 	},
 
-	/*
-	 * getData
-	 * function example return data and show it in the module wrapper
-	 * get a URL request
-	 *
+	/**
+	 * @function getData
+	 * @description function example return data and show it in the module wrapper
 	 */
 	getData: function () {
         var self = this;
@@ -73,11 +75,11 @@ Module.register("MMM-Ethos", {
 		dataRequest.send();
     },
 
-	/* scheduleUpdate()
-	 * Schedule next update.
-	 *
-	 * argument delay number - Milliseconds before next update.
-	 *  If empty, this.config.updateInterval is used.
+	/**
+	 * @function scheduleUpdate
+	 * @description Schedule next update.
+	 * @param {*} delay - Milliseconds before next update. If empty, this.config.updateInterval is used.
+	 * 
 	 */
 	scheduleUpdate: function(delay) {
 		var nextLoad = this.config.updateInterval;
@@ -91,23 +93,31 @@ Module.register("MMM-Ethos", {
 		}, nextLoad);
 	},
 
+    /**
+	 * @function getDom
+	 * @description Generate table.
+	 * @returns tableWrapper
+	 */
 	getDom: function() {
-		var self = this;
-       	var tableWrapper = document.createElement("table");
+		let self = this;
+		let tableWrapper = document.createElement("table");
 		tableWrapper.className = "small mmm-ethos-table"; 
-		// If this.dataRequest is not empty
+
 		if(self.dataRequest){
+			if (!self.config.showSummary && !self.config.showEveryRig) {
+				Log.info("Nothing to show!!");
+			}
 			if (self.config.showSummary) {
-				var tableHeadRow = self.createTableRigsHead();
+				let tableHeadRow = self.createTableRigsHead();
             	tableWrapper.appendChild(tableHeadRow);
-				var trWrapper = self.createTableRigsData(tableWrapper);
+				let trWrapper = self.createTableRigsData(tableWrapper);
 				tableWrapper.appendChild(trWrapper);
 			}
 			if (self.config.showEveryRig) {
-            	var tableHeadRow = self.createTableHead();
+            	let tableHeadRow = self.createTableHead();
             	tableWrapper.appendChild(tableHeadRow);
-				var rigs = self.getRigData();
-				var trWrapper = self.createTableData(rigs,tableWrapper);
+				let rigs = self.getRigData();
+				let trWrapper = self.createTableData(rigs,tableWrapper);
 				tableWrapper.appendChild(trWrapper);
 			}			
 		}
@@ -122,6 +132,11 @@ Module.register("MMM-Ethos", {
 		return tableWrapper;
 	},
 
+	/**
+	 * @description Filter rigData from request
+	 * 
+	 * @returns List of rigData
+	 */
 	getRigData: function() {
 		let rigsData = [];
 		let rigsIds = this.getRigIds();
@@ -132,11 +147,19 @@ Module.register("MMM-Ethos", {
 		return rigsData;
 	},
 
+	/**
+	 * @description Filter id's from request
+	 * 
+	 * @returns List of id's
+	 */
 	getRigIds: function () {
 		let rigs = Object.keys(this.dataRequest['rigs']);
 		return rigs;
 	},
 
+	/**
+	 * @description Create header for table
+	 */
 	createTableHead: function () {
         var self = this;
         var tableHeadRow = document.createElement("tr");
@@ -171,6 +194,9 @@ Module.register("MMM-Ethos", {
         return tableHeadRow;
 	},
 
+	/**
+	 * @description Create table header for rigs
+	 */
 	createTableRigsHead: function () {
         var self = this;
         var tableHeadRow = document.createElement("tr");
@@ -183,7 +209,6 @@ Module.register("MMM-Ethos", {
 		tableHeadValues.push("\u00D8Temp");
 		tableHeadValues.push("Watts");
 
-
         for (var thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
             var tableHeadSetup = document.createElement("th");
             tableHeadSetup.innerHTML = tableHeadValues[thCounter];
@@ -193,12 +218,15 @@ Module.register("MMM-Ethos", {
         return tableHeadRow;
 	},
 	
+	/**
+	 * @description Create data for table rigs
+	 * @param {*} tableWrapper 
+	 */
 	createTableRigsData: function (tableWrapper) {
 		let self = this;
 		var trWrapper = document.createElement("tr");
 		trWrapper.className = 'tr';
 
-		
 		var tdValues = [
 			self.dataRequest["alive_rigs"],
 			self.dataRequest["alive_gpus"],
@@ -231,12 +259,16 @@ Module.register("MMM-Ethos", {
 
 			trWrapper.appendChild(tdWrapper);
 		}
-
 		tableWrapper.appendChild(trWrapper);
 
 		return trWrapper;
 	},
 
+	/**
+	 * @description Create data for table
+	 * @param {Object[]} rigs - List of rigs
+	 * @param {*} tableWrapper 
+	 */
     createTableData: function (rigs,tableWrapper) {
         var self = this;
         if (rigs.length > 0) {
@@ -270,14 +302,17 @@ Module.register("MMM-Ethos", {
 					}
                     trWrapper.appendChild(tdWrapper);
                 }
-    
                 tableWrapper.appendChild(trWrapper);
-                
             }
         }
         return trWrapper;
 	},
 	
+	/**
+	 * @function getAverageTemp
+	 * @description Calculate the average tempeture
+	 * @param {string []} temp - List of tempetures
+	 */
 	getAverageTemp: function(temp) {
 		let temps = temp.split(" ");
 		let averageTemp = 0.0;
@@ -287,6 +322,11 @@ Module.register("MMM-Ethos", {
 		return (averageTemp/temps.length).toFixed(2);
 	},
 
+	/**
+	 * @function getUptime
+	 * @description Checks time and return day/hour/mins
+	 * @param {int} time - Uptime from rig
+	 */
 	getUptime: function(time){
 		let uptime = parseInt(time);
 		if (uptime >= 86400) {
@@ -311,10 +351,13 @@ Module.register("MMM-Ethos", {
 		}
 	},
 
-	getScripts: function() {
-		return [];
-	},
-
+	/**
+     * @function getStyles
+     * @description Style dependencies for this module.
+     * @override
+     *
+     * @returns {string[]} List of the style dependency filepaths.
+     */
 	getStyles: function () {
 		return [
 			"MMM-Ethos.css",
@@ -322,9 +365,14 @@ Module.register("MMM-Ethos", {
 		];
 	},
 
-	// Load translations files
+	/**
+     * @function getTranslations
+     * @description Translations for this module.
+     * @override
+     *
+     * @returns {Object.<string, string>} Available translations for this module (key: language code, value: filepath).
+     */
 	getTranslations: function() {
-		//FIXME: This can be load a one file javascript definition
 		return {
 			en: "translations/en.json",
 			es: "translations/es.json",
@@ -332,6 +380,11 @@ Module.register("MMM-Ethos", {
 		};
 	},
 
+	/**
+	 * @function processData
+	 * @description Sends data to node_helper
+	 * @param {*} data 
+	 */
 	processData: function(data) {
 		var self = this;
 		this.dataRequest = data;
@@ -343,7 +396,14 @@ Module.register("MMM-Ethos", {
 		this.sendSocketNotification("MMM-Ethos-NOTIFICATION_TEST", data);
 	},
 
-	// socketNotificationReceived from helper
+	/**
+     * @function socketNotificationReceived
+     * @description Handles incoming messages from node_helper.
+     * @override
+     *
+     * @param {string} notification - Notification name
+     * @param {*} payload - Detailed payload of the notification.
+     */
 	socketNotificationReceived: function (notification, payload) {
 		if(notification === "MMM-Ethos-NOTIFICATION_TEST") {
 			// set dataNotification
