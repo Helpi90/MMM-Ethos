@@ -2,7 +2,13 @@
 
 This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/).
 
-{{DESCRIPTION}}
+This module shows stats from ethosdistro.com api.
+
+## Installing the module
+Clone this repository in your `~/MagicMirror/modules/` folder `( $ cd ~MagicMirror/modules/ )`:
+````javascript
+git clone https://github.com/Defjam121/MMM-Ethos.git
+````
 
 ## Using the module
 
@@ -12,8 +18,9 @@ var config = {
     modules: [
         {
             module: 'MMM-Ethos',
+            position: 'top_left',
             config: {
-                // See below for configurable options
+                ethosApiLink: 'http://<Your_Sub_Domain>.ethosdistro.com/?json=yes'
             }
         }
     ]
@@ -22,7 +29,7 @@ var config = {
 
 ## Configuration options
 
-| Option           | Description
-|----------------- |-----------
-| `option1`        | *Required* DESCRIPTION HERE
-| `option2`        | *Optional* DESCRIPTION HERE TOO <br><br>**Type:** `int`(milliseconds) <br>Default 60000 milliseconds (1 minute)
+| **Option** | **Default** | **Description** |
+| --- | --- | --- |
+| `ethosApiLink` | `""` | *Required* <br/>The API link from the http://ethosdistro.com/
+| `updateInterval` |  `60000` |*Optional* <br/>How often should the data be fetched. <br><br>**Type:** `int`(milliseconds)
