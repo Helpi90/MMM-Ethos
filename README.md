@@ -34,3 +34,4 @@ var config = {
 | `ethosApiLink` | `""` | *Required* <br/>The API link from the http://ethosdistro.com/
 | `updateInterval` |  `60000` |*Optional* <br/>How often should the data be fetched. <br><br>**Type:** `int`(milliseconds)
 | `allTemps` | `false` | *Optional* <br/> Boolean to show only average temp or all.
+| `showUptime` | `true` | *Optional* <br/> Boolean to show uptime or not.

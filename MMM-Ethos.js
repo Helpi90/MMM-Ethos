@@ -15,7 +15,8 @@ Module.register("MMM-Ethos", {
 		ethosApiLink: "",
 		updateInterval: 60000,
 		retryDelay: 5000,
-		allTemps: false
+		allTemps: false,
+		showUptime: true
 	},
 
 	requiresVersion: "2.1.0", // Required version of MagicMirror
@@ -140,6 +141,10 @@ Module.register("MMM-Ethos", {
 			"Gpus",
             "Hashes"
 		];
+
+		if (self.config.showUptime) {
+			tableHeadValues.push("Uptime");
+		}
 		
 		if (self.config.allTemps) {
 			tableHeadValues.push(this.translate("TEMP")+" °C");
@@ -167,6 +172,10 @@ Module.register("MMM-Ethos", {
 					rigs[index]['gpus'],
                     rigs[index]['hash']
 				];
+				if (self.config.showUptime) {
+					
+					tdValues.push(self.getUptime(rigs[index]['uptime']));
+				}
 				if (self.config.allTemps) {
 					tdValues.push(rigs[index]['temp']);
 				}
@@ -196,6 +205,30 @@ Module.register("MMM-Ethos", {
 			averageTemp += parseFloat(temps[i]);
 		}
 		return (averageTemp/temps.length).toFixed(2);
+	},
+
+	getUptime: function(time){
+		let uptime = parseInt(time);
+		if (uptime >= 86400) {
+			let strUptime = Math.floor(uptime/86400)
+			if (parseInt(strUptime) > 1) {
+				return strUptime+" "+this.translate("DAYS");
+			}
+			return strUptime+" "+this.translate("DAY");
+		}
+		if (uptime >= 3600) {
+			let strUptime = toString(Math.floor(uptime/3600));
+			if (parseInt(strUptime) > 1) {
+				return strUptime+" "+this.translate("HOUR");
+			}else {
+				return strUptime+" "+this.translate("HOURS");
+			}
+			
+		}
+		if (uptime >= 60) {
+			let strUptime = toString(Math.floor(uptime/60));
+			return strUptime+ "mins";
+		}
 	},
 
 	getScripts: function() {
