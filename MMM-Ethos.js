@@ -15,7 +15,8 @@ Module.register("MMM-Ethos", {
 		retryDelay: 5000,
 		allTemps: false,
 		showUptime: true,
-		showEveryRig: true
+		showEveryRig: true,
+		showSummary: false
 	},
 
 	requiresVersion: "2.1.0", // Required version of MagicMirror
@@ -96,20 +97,21 @@ Module.register("MMM-Ethos", {
 		tableWrapper.className = "small mmm-ethos-table"; 
 		// If this.dataRequest is not empty
 		if(self.dataRequest){
-            var tableHeadRow = self.createTableHead();
-            tableWrapper.appendChild(tableHeadRow);
-            if (self.config.showEveryRig) {
+			if (self.config.showSummary) {
+				var tableHeadRow = self.createTableRigsHead();
+            	tableWrapper.appendChild(tableHeadRow);
+				var trWrapper = self.createTableRigsData(tableWrapper);
+				tableWrapper.appendChild(trWrapper);
+			}
+			if (self.config.showEveryRig) {
+            	var tableHeadRow = self.createTableHead();
+            	tableWrapper.appendChild(tableHeadRow);
 				var rigs = self.getRigData();
 				var trWrapper = self.createTableData(rigs,tableWrapper);
 				tableWrapper.appendChild(trWrapper);
-			}else {
-				var trWrapper = self.createTableRigs(tableWrapper);
-				tableWrapper.appendChild(trWrapper);
-			}
+			}			
+		}
 			
-       	}
-        
-
 		// Data from helper
 		if (this.dataNotification) {
 			var wrapperDataNotification = document.createElement("div");
@@ -168,8 +170,30 @@ Module.register("MMM-Ethos", {
         }
         return tableHeadRow;
 	},
+
+	createTableRigsHead: function () {
+        var self = this;
+        var tableHeadRow = document.createElement("tr");
+        tableHeadRow.className = 'border-bottom';
+
+        var tableHeadValues = [];
+		tableHeadValues.push("Rigs")
+		tableHeadValues.push("Gpus");
+		tableHeadValues.push("Hashes");
+		tableHeadValues.push("\u00D8Temp");
+		tableHeadValues.push("Watts");
+
+
+        for (var thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
+            var tableHeadSetup = document.createElement("th");
+            tableHeadSetup.innerHTML = tableHeadValues[thCounter];
+
+            tableHeadRow.appendChild(tableHeadSetup);
+        }
+        return tableHeadRow;
+	},
 	
-	createTableRigs: function (tableWrapper) {
+	createTableRigsData: function (tableWrapper) {
 		let self = this;
 		var trWrapper = document.createElement("tr");
 		trWrapper.className = 'tr';
@@ -223,7 +247,7 @@ Module.register("MMM-Ethos", {
 					rigs[index]['gpus'],
                     rigs[index]['hash']
 				];
-
+				let crit = false;
 				if (self.config.showUptime) {
 					
 					tdValues.push(self.getUptime(rigs[index]['uptime']));
@@ -232,14 +256,18 @@ Module.register("MMM-Ethos", {
 					tdValues.push(rigs[index]['temp']);
 				}
 				else {
-					self.getAverageTemp(rigs[index]['temp']);
+					if(self.getAverageTemp(rigs[index]['temp'])>70) {
+						crit = true;
+					}
 					tdValues.push(self.getAverageTemp(rigs[index]['temp'])+"°C");
 				}
                 for (var c = 0; c < tdValues.length; c++) {
                     var tdWrapper = document.createElement("td");
     
                     tdWrapper.innerHTML = tdValues[c];
-    
+					if (crit) {
+						tdWrapper.className = 'crit';
+					}
                     trWrapper.appendChild(tdWrapper);
                 }
     
