@@ -35,3 +35,4 @@ var config = {
 | `updateInterval` |  `60000` |*Optional* <br/>How often should the data be fetched. <br><br>**Type:** `int`(milliseconds)
 | `allTemps` | `false` | *Optional* <br/> Boolean to show only average temp or all.
 | `showUptime` | `true` | *Optional* <br/> Boolean to show uptime or not.
+| `showEveryRig` | `true` | *Optional* <br/> Boolean to show every rig or a summary.

@@ -8,15 +8,14 @@
  */
 
 
-
-
 Module.register("MMM-Ethos", {
 	defaults: {
 		ethosApiLink: "",
 		updateInterval: 60000,
 		retryDelay: 5000,
 		allTemps: false,
-		showUptime: true
+		showUptime: true,
+		showEveryRig: true
 	},
 
 	requiresVersion: "2.1.0", // Required version of MagicMirror
@@ -91,19 +90,23 @@ Module.register("MMM-Ethos", {
 		}, nextLoad);
 	},
 
-	
-
 	getDom: function() {
 		var self = this;
        	var tableWrapper = document.createElement("table");
-       	tableWrapper.className = "small mmm-ethos-table";
+		tableWrapper.className = "small mmm-ethos-table"; 
 		// If this.dataRequest is not empty
 		if(self.dataRequest){
             var tableHeadRow = self.createTableHead();
             tableWrapper.appendChild(tableHeadRow);
-            var rigs = self.getRigData();
-            var trWrapper = self.createTableData(rigs,tableWrapper);
-            tableWrapper.appendChild(trWrapper);
+            if (self.config.showEveryRig) {
+				var rigs = self.getRigData();
+				var trWrapper = self.createTableData(rigs,tableWrapper);
+				tableWrapper.appendChild(trWrapper);
+			}else {
+				var trWrapper = self.createTableRigs(tableWrapper);
+				tableWrapper.appendChild(trWrapper);
+			}
+			
        	}
         
 
@@ -137,19 +140,24 @@ Module.register("MMM-Ethos", {
         var tableHeadRow = document.createElement("tr");
         tableHeadRow.className = 'border-bottom';
 
-        var tableHeadValues = [
-			"Gpus",
-            "Hashes"
-		];
+        var tableHeadValues = [];
+		if (!self.config.showEveryRig) {
+			tableHeadValues.push("Rigs")
+		}
+		tableHeadValues.push("Gpus");
+		tableHeadValues.push("Hashes");
 
-		if (self.config.showUptime) {
+		if (self.config.showUptime && self.config.showEveryRig) {
 			tableHeadValues.push("Uptime");
 		}
 		
-		if (self.config.allTemps) {
+		if (self.config.allTemps && self.config.showEveryRig) {
 			tableHeadValues.push(this.translate("TEMP")+" °C");
 		}else {
-			tableHeadValues.push("Temp");
+			tableHeadValues.push("\u00D8Temp");
+		}
+		if (!self.config.showEveryRig) {
+			tableHeadValues.push("Watts");
 		}
 
         for (var thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
@@ -159,9 +167,52 @@ Module.register("MMM-Ethos", {
             tableHeadRow.appendChild(tableHeadSetup);
         }
         return tableHeadRow;
-
 	},
 	
+	createTableRigs: function (tableWrapper) {
+		let self = this;
+		var trWrapper = document.createElement("tr");
+		trWrapper.className = 'tr';
+
+		
+		var tdValues = [
+			self.dataRequest["alive_rigs"],
+			self.dataRequest["alive_gpus"],
+			self.dataRequest["total_hash"],
+			self.dataRequest["avg_temp"].toFixed(2) + "°C",
+			self.dataRequest["total_watts"]
+		];
+
+		for (var c = 0; c < tdValues.length; c++) {
+			var tdWrapper = document.createElement("td");
+
+			tdWrapper.innerHTML = tdValues[c];
+
+			if (c === 0 && tdValues[c] !== self.dataRequest["total_rigs"]) {
+				tdWrapper.className = 'crit';
+			}
+			switch (c) {
+				case 0:
+					if (tdValues[c] !== self.dataRequest["total_rigs"]) {
+						tdWrapper.className = 'crit';
+					}
+					break;
+				case 1:
+					if (tdValues[c] !== self.dataRequest["total_gpus"]) {
+						tdWrapper.className = 'crit';
+					}
+				default:
+					break;
+			}
+
+			trWrapper.appendChild(tdWrapper);
+		}
+
+		tableWrapper.appendChild(trWrapper);
+
+		return trWrapper;
+	},
+
     createTableData: function (rigs,tableWrapper) {
         var self = this;
         if (rigs.length > 0) {
@@ -172,6 +223,7 @@ Module.register("MMM-Ethos", {
 					rigs[index]['gpus'],
                     rigs[index]['hash']
 				];
+
 				if (self.config.showUptime) {
 					
 					tdValues.push(self.getUptime(rigs[index]['uptime']));
