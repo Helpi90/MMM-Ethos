@@ -10,9 +10,9 @@ This module shows stats from ethosdistro.com api.<br/> <br/>
 ![displayType digital](showAllTemps.png)
 ## Installing the module
 Clone this repository in your `~/MagicMirror/modules/`:
-````javascript
-git clone https://github.com/Defjam121/MMM-Ethos.git
-````
+
+`git clone https://github.com/Defjam121/MMM-Ethos.git`
+
 
 ## Custom Panel ID
 To get a api link, you must setting a custom Panel id on all your rigs. [Setting a Custom Panel ID](http://ethosdistro.com/kb/#custompanel)
@@ -40,7 +40,7 @@ var config = {
 
 | **Option** | **Default** | **Description** |
 | --- | --- | --- |
-| `ethosApiLink` | `""` | *Required* <br/>The API link from the http://ethosdistro.com/
+| `ethosApiLink` | `""` | *Required* <br/>The API link from the [Custom Panel](http://ethosdistro.com/kb/#custompanel)
 | `updateInterval` |  `60000` |*Optional* <br/>How often should the data be fetched. <br><br>**Type:** `int`(milliseconds)
 | `allTemps` | `false` | *Optional* <br/> Boolean to show only average temp or all.
 | `allHashes` | `false` | *Optional* <br/> Boolean to show only average hashes or all.
