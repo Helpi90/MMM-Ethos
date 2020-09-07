@@ -14,6 +14,9 @@ Clone this repository in your `~/MagicMirror/modules/`:
 git clone https://github.com/Defjam121/MMM-Ethos.git
 ````
 
+## Custom Panel ID
+To get a api link, you must setting a custom Panel id on all your rigs. [Setting a Custom Panel ID](http://ethosdistro.com/kb/#custompanel)
+
 ## Using the module
 
 To use this module, add the following configuration block to the modules array in the `config/config.js` file:
@@ -30,6 +33,8 @@ var config = {
     ]
 }
 ```
+
+
 
 ## Configuration options
 
