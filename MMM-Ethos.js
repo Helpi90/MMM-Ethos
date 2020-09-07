@@ -328,16 +328,19 @@ Module.register("MMM-Ethos", {
 	 * @param {int} time - Uptime from rig
 	 */
 	getUptime: function(time){
+		if (time === undefined) {
+			return "Offline";
+		}
 		let uptime = parseInt(time);
 		if (uptime >= 86400) {
-			let strUptime = Math.floor(uptime/86400)
+			let strUptime = (Math.floor(uptime/86400)).toString();
 			if (parseInt(strUptime) > 1) {
 				return strUptime+" "+this.translate("DAYS");
 			}
 			return strUptime+" "+this.translate("DAY");
 		}
 		if (uptime >= 3600) {
-			let strUptime = toString(Math.floor(uptime/3600));
+			let strUptime = (Math.floor(uptime/3600)).toString();
 			if (parseInt(strUptime) > 1) {
 				return strUptime+" "+this.translate("HOUR");
 			}else {
@@ -346,8 +349,8 @@ Module.register("MMM-Ethos", {
 			
 		}
 		if (uptime >= 60) {
-			let strUptime = toString(Math.floor(uptime/60));
-			return strUptime+ "mins";
+			let strUptime = (Math.floor(uptime/60)).toString();
+			return strUptime + " mins";
 		}
 	},
 
