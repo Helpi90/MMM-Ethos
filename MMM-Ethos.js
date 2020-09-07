@@ -102,6 +102,11 @@ Module.register("MMM-Ethos", {
 	 */
 	getDom: function() {
 		let self = this;
+		if (self.config.ethosApiLink === "") {
+			var wrapper = document.createElement("div");
+			wrapper.innerHTML = "Please set the api lin in the config for module: " + this.name + ".";
+			return wrapper;
+		}
 		let tableWrapper = document.createElement("table");
 		tableWrapper.className = "small mmm-ethos-table"; 
 
