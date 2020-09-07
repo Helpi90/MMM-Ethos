@@ -329,6 +329,12 @@ Module.register("MMM-Ethos", {
         return trWrapper;
 	},
 	
+	/**
+	 * @description Check hash values and gpus
+	 * @param {object} rig 
+	 * 
+	 * @returns bool
+	 */
 	checkHashes: function(rig) {
 		let gpus 
 		let hashes = rig["miner_hashes"].split(" ");
