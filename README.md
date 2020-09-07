@@ -38,6 +38,8 @@ var config = {
 | `ethosApiLink` | `""` | *Required* <br/>The API link from the http://ethosdistro.com/
 | `updateInterval` |  `60000` |*Optional* <br/>How often should the data be fetched. <br><br>**Type:** `int`(milliseconds)
 | `allTemps` | `false` | *Optional* <br/> Boolean to show only average temp or all.
+| `allHashes` | `false` | *Optional* <br/> Boolean to show only average hashes or all.
 | `showUptime` | `true` | *Optional* <br/> Boolean to show uptime or not.
+| `showWatts` | `true` | *Optional* <br/> Boolean to show watts or not.
 | `showEveryRig` | `true` | *Optional* <br/> Boolean to show every rig or not.
 | `showSummary` | `false` | *Optional* <br/> Boolean to show summary rigs or not.

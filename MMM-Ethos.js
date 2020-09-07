@@ -14,7 +14,9 @@ Module.register("MMM-Ethos", {
 		updateInterval: 60000,
 		retryDelay: 5000,
 		allTemps: false,
+		allHashes: false,
 		showUptime: true,
+		showWatts: true,
 		showEveryRig: true,
 		showSummary: false
 	},
@@ -166,25 +168,23 @@ Module.register("MMM-Ethos", {
         tableHeadRow.className = 'border-bottom';
 
         var tableHeadValues = [];
-		if (!self.config.showEveryRig) {
-			tableHeadValues.push("Rigs")
-		}
 		tableHeadValues.push("Gpus");
 		tableHeadValues.push("Hashes");
 
-		if (self.config.showUptime && self.config.showEveryRig) {
+		if (self.config.showUptime) {
 			tableHeadValues.push("Uptime");
 		}
 		
-		if (self.config.allTemps && self.config.showEveryRig) {
+		if (self.config.allTemps) {
 			tableHeadValues.push(this.translate("TEMP")+" °C");
 		}else {
 			tableHeadValues.push("\u00D8Temp");
 		}
-		if (!self.config.showEveryRig) {
+
+		if (self.config.showWatts) {
 			tableHeadValues.push("Watts");
 		}
-
+		
         for (var thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
             var tableHeadSetup = document.createElement("th");
             tableHeadSetup.innerHTML = tableHeadValues[thCounter];
@@ -207,8 +207,11 @@ Module.register("MMM-Ethos", {
 		tableHeadValues.push("Gpus");
 		tableHeadValues.push("Hashes");
 		tableHeadValues.push("\u00D8Temp");
-		tableHeadValues.push("Watts");
 
+		if (self.config.showWatts) {
+			tableHeadValues.push("Watts");
+		}
+		
         for (var thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
             var tableHeadSetup = document.createElement("th");
             tableHeadSetup.innerHTML = tableHeadValues[thCounter];
@@ -232,8 +235,11 @@ Module.register("MMM-Ethos", {
 			self.dataRequest["alive_gpus"],
 			self.dataRequest["total_hash"],
 			self.dataRequest["avg_temp"].toFixed(2) + "°C",
-			self.dataRequest["total_watts"]
 		];
+
+		if (self.config.showWatts) {
+			tdValues.push(self.dataRequest["total_watts"]);
+		}
 
 		for (var c = 0; c < tdValues.length; c++) {
 			var tdWrapper = document.createElement("td");
@@ -276,9 +282,15 @@ Module.register("MMM-Ethos", {
                 var trWrapper = document.createElement("tr");
                 trWrapper.className = 'tr';
                 var tdValues = [
-					rigs[index]['gpus'],
-                    rigs[index]['hash']
+					rigs[index]['gpus']
 				];
+
+				if (self.config.allHashes) {
+					tdValues.push(rigs[index]['miner_hashes']);
+				} else {
+					tdValues.push(rigs[index]['hash']);
+				}
+
 				let crit = false;
 				if (self.config.showUptime) {
 					
@@ -293,6 +305,12 @@ Module.register("MMM-Ethos", {
 					}
 					tdValues.push(self.getAverageTemp(rigs[index]['temp'])+"°C");
 				}
+				
+				if (self.config.showWatts) {
+					tdValues.push(rigs[index]["rig_watts"]);
+				}
+				
+
                 for (var c = 0; c < tdValues.length; c++) {
                     var tdWrapper = document.createElement("td");
     
