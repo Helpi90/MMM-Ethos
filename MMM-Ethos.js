@@ -171,7 +171,7 @@ Module.register("MMM-Ethos", {
         let self = this;
         let tableHeadRow = document.createElement("tr");
         tableHeadRow.className = 'border-bottom';
-
+		
         let tableHeadValues = [];
 		tableHeadValues.push("Gpus");
 		tableHeadValues.push("Hashes");
@@ -193,7 +193,7 @@ Module.register("MMM-Ethos", {
         for (let thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
             let tableHeadSetup = document.createElement("th");
             tableHeadSetup.innerHTML = tableHeadValues[thCounter];
-
+			
             tableHeadRow.appendChild(tableHeadSetup);
         }
         return tableHeadRow;
