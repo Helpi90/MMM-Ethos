@@ -27,7 +27,7 @@ Module.register("MMM-Ethos", {
 	 * @function start
 	 * @description Calls createInterval and sends the config to the node_helper.
 	 */
-	start: function() {
+	start: function () {
 		let self = this;
 		let dataRequest = null;
 		let dataNotification = null;
@@ -39,7 +39,7 @@ Module.register("MMM-Ethos", {
 
 		// Schedule update timer.
 		this.getData();
-		setInterval(function() {
+		setInterval(function () {
 			self.updateDom();
 		}, this.config.updateInterval);
 	},
@@ -49,33 +49,33 @@ Module.register("MMM-Ethos", {
 	 * @description function example return data and show it in the module wrapper
 	 */
 	getData: function () {
-        let self = this;
+		let self = this;
 
-        let urlApi = self.config.ethosApiLink;
-        let retry = true;
+		let urlApi = self.config.ethosApiLink;
+		let retry = true;
 
-        let dataRequest = new XMLHttpRequest();
-        dataRequest.open("GET", urlApi, true);
-        dataRequest.onreadystatechange = function () {
-            //console.log(this.readyState);
-            if (this.readyState === 4) {
-                //console.log(this.status);
-                if (this.status === 200) {
-                    self.processData(JSON.parse(this.response));
-                } else if (this.status === 401) {
-                    self.updateDom(self.config.animationSpeed);
-                    Log.error(self.name, this.status);
-                    retry = false;
-                } else {
-                    Log.error(self.name, "Could not load data.");
-                }
-                if (retry) {
-                    self.scheduleUpdate((self.loaded) ? -1 : self.config.retryDelay);
-                }
-            }
+		let dataRequest = new XMLHttpRequest();
+		dataRequest.open("GET", urlApi, true);
+		dataRequest.onreadystatechange = function () {
+			//console.log(this.readyState);
+			if (this.readyState === 4) {
+				//console.log(this.status);
+				if (this.status === 200) {
+					self.processData(JSON.parse(this.response));
+				} else if (this.status === 401) {
+					self.updateDom(self.config.animationSpeed);
+					Log.error(self.name, this.status);
+					retry = false;
+				} else {
+					Log.error(self.name, "Could not load data.");
+				}
+				if (retry) {
+					self.scheduleUpdate((self.loaded) ? -1 : self.config.retryDelay);
+				}
+			}
 		};
 		dataRequest.send();
-    },
+	},
 
 	/**
 	 * @function scheduleUpdate
@@ -83,14 +83,14 @@ Module.register("MMM-Ethos", {
 	 * @param {*} delay - Milliseconds before next update. If empty, this.config.updateInterval is used.
 	 * 
 	 */
-	scheduleUpdate: function(delay) {
+	scheduleUpdate: function (delay) {
 		let nextLoad = this.config.updateInterval;
 		if (typeof delay !== "undefined" && delay >= 0) {
 			nextLoad = delay;
 		}
-		nextLoad = nextLoad ;
+		nextLoad = nextLoad;
 		let self = this;
-		setTimeout(function() {
+		setTimeout(function () {
 			self.getData();
 		}, nextLoad);
 	},
@@ -100,7 +100,7 @@ Module.register("MMM-Ethos", {
 	 * @description Generate table.
 	 * @returns tableWrapper
 	 */
-	getDom: function() {
+	getDom: function () {
 		let self = this;
 		if (self.config.ethosApiLink === "") {
 			var wrapper = document.createElement("div");
@@ -108,32 +108,32 @@ Module.register("MMM-Ethos", {
 			return wrapper;
 		}
 		let tableWrapper = document.createElement("table");
-		tableWrapper.className = "small mmm-ethos-table"; 
+		tableWrapper.className = "small mmm-ethos-table";
 
-		if(self.dataRequest){
+		if (self.dataRequest) {
 			if (!self.config.showSummary && !self.config.showEveryRig) {
 				Log.info("Nothing to show!!");
 			}
 			if (self.config.showSummary) {
 				let tableHeadRow = self.createTableRigsHead();
-            	tableWrapper.appendChild(tableHeadRow);
+				tableWrapper.appendChild(tableHeadRow);
 				let trWrapper = self.createTableRigsData(tableWrapper);
 				tableWrapper.appendChild(trWrapper);
 			}
 			if (self.config.showEveryRig) {
-            	let tableHeadRow = self.createTableHead();
-            	tableWrapper.appendChild(tableHeadRow);
+				let tableHeadRow = self.createTableHead();
+				tableWrapper.appendChild(tableHeadRow);
 				let rigs = self.getRigData();
-				let trWrapper = self.createTableData(rigs,tableWrapper);
+				let trWrapper = self.createTableData(rigs, tableWrapper);
 				tableWrapper.appendChild(trWrapper);
-			}			
+			}
 		}
-			
+
 		// Data from helper
 		if (this.dataNotification) {
 			var wrapperDataNotification = document.createElement("div");
 			// translations  + datanotification
-			wrapperDataNotification.innerHTML =  this.translate("UPDATE") + ": " + this.dataNotification.date;
+			wrapperDataNotification.innerHTML = this.translate("UPDATE") + ": " + this.dataNotification.date;
 
 		}
 		return tableWrapper;
@@ -144,10 +144,10 @@ Module.register("MMM-Ethos", {
 	 * 
 	 * @returns List of rigData
 	 */
-	getRigData: function() {
+	getRigData: function () {
 		let rigsData = [];
 		let rigsIds = this.getRigIds();
-		for(let i=0; i<rigsIds.length; i++){
+		for (let i = 0; i < rigsIds.length; i++) {
 			let rigData = this.dataRequest['rigs'][rigsIds[i]]
 			rigsData.push(rigData);
 		}
@@ -168,17 +168,17 @@ Module.register("MMM-Ethos", {
 	 * @description Create header for table
 	 */
 	createTableHead: function () {
-        let self = this;
-        let tableHeadRow = document.createElement("tr");
-        tableHeadRow.className = 'border-bottom';
-		
-        let tableHeadValues = [];
+		let self = this;
+		let tableHeadRow = document.createElement("tr");
+		tableHeadRow.className = 'border-bottom';
+
+		let tableHeadValues = [];
 		tableHeadValues.push("Gpus");
 		tableHeadValues.push("Hashes");
 
 		if (self.config.allTemps) {
-			tableHeadValues.push(this.translate("TEMP")+" °C");
-		}else {
+			tableHeadValues.push(this.translate("TEMP") + " °C");
+		} else {
 			tableHeadValues.push("\u00D8Temp");
 		}
 
@@ -189,25 +189,25 @@ Module.register("MMM-Ethos", {
 		if (self.config.showWatts) {
 			tableHeadValues.push("Watts");
 		}
-		
-        for (let thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
-            let tableHeadSetup = document.createElement("th");
-            tableHeadSetup.innerHTML = tableHeadValues[thCounter];
-			
-            tableHeadRow.appendChild(tableHeadSetup);
-        }
-        return tableHeadRow;
+
+		for (let thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
+			let tableHeadSetup = document.createElement("th");
+			tableHeadSetup.innerHTML = tableHeadValues[thCounter];
+
+			tableHeadRow.appendChild(tableHeadSetup);
+		}
+		return tableHeadRow;
 	},
 
 	/**
 	 * @description Create table header for rigs
 	 */
 	createTableRigsHead: function () {
-        let self = this;
-        let tableHeadRow = document.createElement("tr");
-        tableHeadRow.className = 'border-bottom';
+		let self = this;
+		let tableHeadRow = document.createElement("tr");
+		tableHeadRow.className = 'border-bottom';
 
-        let tableHeadValues = [];
+		let tableHeadValues = [];
 		tableHeadValues.push("Rigs")
 		tableHeadValues.push("Gpus");
 		tableHeadValues.push("Hashes");
@@ -216,16 +216,16 @@ Module.register("MMM-Ethos", {
 		if (self.config.showWatts) {
 			tableHeadValues.push("Watts");
 		}
-		
-        for (let thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
-            let tableHeadSetup = document.createElement("th");
-            tableHeadSetup.innerHTML = tableHeadValues[thCounter];
 
-            tableHeadRow.appendChild(tableHeadSetup);
-        }
-        return tableHeadRow;
+		for (let thCounter = 0; thCounter < tableHeadValues.length; thCounter++) {
+			let tableHeadSetup = document.createElement("th");
+			tableHeadSetup.innerHTML = tableHeadValues[thCounter];
+
+			tableHeadRow.appendChild(tableHeadSetup);
+		}
+		return tableHeadRow;
 	},
-	
+
 	/**
 	 * @description Create data for table rigs
 	 * @param {*} tableWrapper 
@@ -280,16 +280,16 @@ Module.register("MMM-Ethos", {
 	 * @param {Object[]} rigs - List of rigs
 	 * @param {*} tableWrapper 
 	 */
-    createTableData: function (rigs,tableWrapper) {
-        let self = this;
-        if (rigs.length > 0) {
-            for (let index = 0; index < rigs.length; index++) {
-                var trWrapper = document.createElement("tr");
+	createTableData: function (rigs, tableWrapper) {
+		let self = this;
+		if (rigs.length > 0) {
+			for (let index = 0; index < rigs.length; index++) {
+				var trWrapper = document.createElement("tr");
 				trWrapper.className = 'tr';
 				let critHashes = false;
 				let critTemp = false;
-				
-                let tdValues = [
+
+				let tdValues = [
 					rigs[index]['gpus']
 				];
 
@@ -301,15 +301,15 @@ Module.register("MMM-Ethos", {
 						critHashes = true;
 					}
 				}
-				
+
 				if (self.config.allTemps) {
 					tdValues.push(rigs[index]['temp']);
 				}
 				else {
-					if(self.getAverageTemp(rigs[index]['temp'])>70) {
+					if (self.getAverageTemp(rigs[index]['temp']) > 70) {
 						critTemp = true;
 					}
-					tdValues.push(self.getAverageTemp(rigs[index]['temp'])+"°C");
+					tdValues.push(self.getAverageTemp(rigs[index]['temp']) + "°C");
 				}
 				if (self.config.showUptime) {
 					tdValues.push(self.getUptime(rigs[index]['uptime']));
@@ -317,38 +317,38 @@ Module.register("MMM-Ethos", {
 				if (self.config.showWatts) {
 					tdValues.push(rigs[index]["rig_watts"]);
 				}
-				
 
-                for (let c = 0; c < tdValues.length; c++) {
-                    var tdWrapper = document.createElement("td");
-    
-                    tdWrapper.innerHTML = tdValues[c];
+
+				for (let c = 0; c < tdValues.length; c++) {
+					var tdWrapper = document.createElement("td");
+
+					tdWrapper.innerHTML = tdValues[c];
 					if ((critTemp && c == 2) || (critHashes && c == 1)) {
 						tdWrapper.className = 'crit';
 					}
-                    trWrapper.appendChild(tdWrapper);
-                }
-                tableWrapper.appendChild(trWrapper);
-            }
-        }
-        return trWrapper;
+					trWrapper.appendChild(tdWrapper);
+				}
+				tableWrapper.appendChild(trWrapper);
+			}
+		}
+		return trWrapper;
 	},
-	
+
 	/**
 	 * @description Check hash values and gpus
 	 * @param {object} rig 
 	 * 
 	 * @returns bool
 	 */
-	checkHashes: function(rig) {
-		let gpus 
+	checkHashes: function (rig) {
+		let gpus
 		let hashes = rig["miner_hashes"].split(" ");
 		if (hashes.length !== parseInt(rig["gpus"])) {
 			return true;
 		}
 		for (let index = 0; index < hashes.length; index++) {
 			const hash = hashes[index];
-			if(parseInt(hash) <= 10) {
+			if (parseInt(hash) <= 10) {
 				return true;
 			}
 		}
@@ -360,13 +360,13 @@ Module.register("MMM-Ethos", {
 	 * @description Calculate the average tempeture
 	 * @param {string []} temp - List of tempetures
 	 */
-	getAverageTemp: function(temp) {
+	getAverageTemp: function (temp) {
 		let temps = temp.split(" ");
 		let averageTemp = 0.0;
 		for (let i = 0; i < temps.length; i++) {
 			averageTemp += parseFloat(temps[i]);
 		}
-		return (averageTemp/temps.length).toFixed(2);
+		return (averageTemp / temps.length).toFixed(2);
 	},
 
 	/**
@@ -374,29 +374,29 @@ Module.register("MMM-Ethos", {
 	 * @description Checks time and return day/hour/mins
 	 * @param {int} time - Uptime from rig
 	 */
-	getUptime: function(time){
+	getUptime: function (time) {
 		if (time === undefined) {
 			return "Offline";
 		}
 		let uptime = parseInt(time);
 		if (uptime >= 86400) {
-			let strUptime = (Math.floor(uptime/86400)).toString();
+			let strUptime = (Math.floor(uptime / 86400)).toString();
 			if (parseInt(strUptime) === 1) {
-				return strUptime+" "+this.translate("DAY");
+				return strUptime + " " + this.translate("DAY");
 			}
-			return strUptime+" "+this.translate("DAYS");
+			return strUptime + " " + this.translate("DAYS");
 		}
 		if (uptime >= 3600) {
-			let strUptime = (Math.floor(uptime/3600)).toString();
+			let strUptime = (Math.floor(uptime / 3600)).toString();
 			if (parseInt(strUptime) === 1) {
-				return strUptime+" "+this.translate("HOUR");
-			}else {
-				return strUptime+" "+this.translate("HOURS");
+				return strUptime + " " + this.translate("HOUR");
+			} else {
+				return strUptime + " " + this.translate("HOURS");
 			}
-			
+
 		}
 		if (uptime >= 60) {
-			let strUptime = (Math.floor(uptime/60)).toString();
+			let strUptime = (Math.floor(uptime / 60)).toString();
 			return strUptime + " mins";
 		}
 	},
@@ -422,7 +422,7 @@ Module.register("MMM-Ethos", {
      *
      * @returns {Object.<string, string>} Available translations for this module (key: language code, value: filepath).
      */
-	getTranslations: function() {
+	getTranslations: function () {
 		return {
 			en: "translations/en.json",
 			es: "translations/es.json",
@@ -435,10 +435,10 @@ Module.register("MMM-Ethos", {
 	 * @description Sends data to node_helper
 	 * @param {*} data 
 	 */
-	processData: function(data) {
+	processData: function (data) {
 		var self = this;
 		this.dataRequest = data;
-		if (this.loaded === false) { self.updateDom(self.config.animationSpeed) ; }
+		if (this.loaded === false) { self.updateDom(self.config.animationSpeed); }
 		this.loaded = true;
 
 		// the data if load
@@ -455,7 +455,7 @@ Module.register("MMM-Ethos", {
      * @param {*} payload - Detailed payload of the notification.
      */
 	socketNotificationReceived: function (notification, payload) {
-		if(notification === "MMM-Ethos-NOTIFICATION_TEST") {
+		if (notification === "MMM-Ethos-NOTIFICATION_TEST") {
 			// set dataNotification
 			this.rigs = payload;
 			this.updateDom();
