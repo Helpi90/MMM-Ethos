@@ -11,7 +11,7 @@ This module shows stats from ethosdistro.com api.<br/> <br/>
 ## Installing the module
 Clone this repository in your `~/MagicMirror/modules/`:
 
-`git clone https://github.com/Defjam121/MMM-Ethos.git`
+`git clone https://github.com/Helpi90/MMM-Ethos.git`
 
 
 ## Custom Panel ID
